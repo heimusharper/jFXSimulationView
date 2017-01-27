@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="content" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+    <children>
+        <BorderPane layoutX="400.0" layoutY="243.0" prefHeight="700.0" prefWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <right>
+                <Accordion fx:id="rightPanel" prefHeight="660.0" prefWidth="270.0" BorderPane.alignment="CENTER">
+                    <panes>
+                        <TitledPane animated="false" prefHeight="608.0" prefWidth="292.0" text="BIM">
+                            <content>
+                                <VBox prefHeight="200.0" prefWidth="100.0" />
+                            </content>
+                        </TitledPane>
+                        <TitledPane animated="false" text="Zone">
+                            <content>
+                                <VBox prefHeight="200.0" prefWidth="100.0" />
+                            </content>
+                        </TitledPane>
+                        <TitledPane animated="false" text="Transition">
+                            <content>
+                                <VBox prefHeight="200.0" prefWidth="100.0" />
+                            </content>
+                        </TitledPane>
+                        <TitledPane animated="false" prefHeight="608.0" prefWidth="292.0" text="Sensor">
+                            <content>
+                                <VBox prefHeight="200.0" prefWidth="100.0" />
+                            </content>
+                        </TitledPane>
+                        <TitledPane animated="false" prefHeight="608.0" prefWidth="292.0" text="Light">
+                            <content>
+                                <VBox prefHeight="200.0" prefWidth="100.0" />
+                            </content>
+                        </TitledPane>
+                        <TitledPane animated="false" prefHeight="608.0" prefWidth="292.0" text="Arrow">
+                            <content>
+                                <VBox prefHeight="200.0" prefWidth="100.0" />
+                            </content>
+                        </TitledPane>
+                    </panes>
+                </Accordion>
+            </right>
+            <top>
+                <ToolBar fx:id="toolBar" prefHeight="40.0" prefWidth="706.0" BorderPane.alignment="CENTER">
+                    <items>
+                        <Button fx:id="openFile" cache="true" defaultButton="true" onAction="#openFileHandler" text="Open">
+                            <cursor>
+                                <Cursor fx:constant="HAND" />
+                            </cursor>
+                        </Button>
+                        <Button fx:id="saveFile" cache="true" onAction="#saveFileHandler" text="Save">
+                            <cursor>
+                                <Cursor fx:constant="HAND" />
+                            </cursor>
+                        </Button>
+                        <Button fx:id="modeView" cache="true" onAction="#modeViewHandler" text="View">
+                            <cursor>
+                                <Cursor fx:constant="HAND" />
+                            </cursor>
+                        </Button>
+                        <Button fx:id="addSensor" cache="true" onAction="#addSensorHandler" text="Add Sensor">
+                            <cursor>
+                                <Cursor fx:constant="HAND" />
+                            </cursor>
+                        </Button>
+                        <Button fx:id="addLight" cache="true" onAction="#addLightHandler" text="Add Light">
+                            <cursor>
+                                <Cursor fx:constant="HAND" />
+                            </cursor>
+                        </Button>
+                        <Button fx:id="addArrow" cache="true" onAction="#addArrowHandler" text="Add Arrow">
+                            <cursor>
+                                <Cursor fx:constant="HAND" />
+                            </cursor>
+                        </Button>
+                    </items>
+                </ToolBar>
+            </top>
+            <center>
+                <Pane fx:id="canvas" minHeight="200.0" minWidth="200.0">
+               <children>
+                  <Group fx:id="gRoot" layoutX="172.0" layoutY="198.0" />
+               </children></Pane>
+            </center>
+        </BorderPane>
+    </children>
+</AnchorPane>
