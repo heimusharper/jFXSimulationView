@@ -1,10 +1,10 @@
 package sample;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.ToolBar;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
@@ -15,6 +15,7 @@ import json.extendetGeometry.BIMLoader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.net.InetSocketAddress;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -24,6 +25,17 @@ public class Controller implements Initializable {
     @FXML public Accordion  rightPanel;
     @FXML public ToolBar    toolBar;
     @FXML public Group      gRoot;
+
+    @FXML public TextField zoneIdField;
+    @FXML public TextField zoneNumOfPeopleField;
+
+    @FXML public TextField sensorIdField;
+    @FXML public TextField sensorDeviceIdField;
+    @FXML public ChoiceBox sensorTypeField;
+
+    @FXML public TitledPane networkTab;
+    @FXML public TextField  hostField;
+    @FXML public TextField  portField;
 
     private Stage primaryStage;
 
@@ -42,6 +54,8 @@ public class Controller implements Initializable {
             BIMExt bim = loadBim(file);
             FXBIMExtHandler fxbimExtHandler = new FXBIMExtHandler(bim);
             fxbimExtHandler.drawBIM(gRoot);
+            fxbimExtHandler.setZoneFields(zoneIdField, zoneNumOfPeopleField);
+            fxbimExtHandler.setSensorFields(sensorIdField, sensorDeviceIdField, sensorTypeField);
         } catch (NullPointerException e) {
             System.out.println("File not selected");
         } catch (FileNotFoundException e) {
@@ -57,9 +71,6 @@ public class Controller implements Initializable {
     }
 
     public void saveFileHandler() {
-    }
-
-    public void modeViewHandler() {
     }
 
     public void addSensorHandler() {
@@ -83,5 +94,23 @@ public class Controller implements Initializable {
             gRoot.setLayoutY(newValue.doubleValue());
             gRoot.prefHeight(newValue.doubleValue());
         });
+    }
+
+    public void networkHandler(ActionEvent event) {
+        networkTab.setVisible(true);
+        networkTab.setExpanded(true);
+    }
+
+    public void connectHandler(ActionEvent event) {
+        InetSocketAddress socketAddress;
+
+        if (hostField.getText().isEmpty()) hostField.setText("localhost");
+        if (!portField.getText().isEmpty())
+            socketAddress = new InetSocketAddress(hostField.getText(), Integer.parseInt(portField.getText()));
+    }
+
+    public void disconnectHandler(ActionEvent event) {
+        networkTab.setExpanded(false);
+        networkTab.setVisible(false);
     }
 }

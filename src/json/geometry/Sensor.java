@@ -58,6 +58,8 @@ public abstract class Sensor {
      */
     private String note;
 
+    private String type;
+
     public String getId() {
         return id;
     }
@@ -104,5 +106,13 @@ public abstract class Sensor {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

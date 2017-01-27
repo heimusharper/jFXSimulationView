@@ -1,9 +1,14 @@
 package sample;
 
 import javafx.scene.Group;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import json.extendetGeometry.BIMExt;
+import json.extendetGeometry.SensorExt;
 import json.extendetGeometry.ZoneExt;
 
 import java.util.ArrayList;
@@ -20,11 +25,16 @@ import static json.geometry.Zone.FLOOR;
  */
 class FXBIMExtHandler {
 
-    private BIMExt bim;
-    private double orgSceneX;
-    private double orgSceneY;
-    private double orgTranslateX;
-    private double orgTranslateY;
+    private BIMExt    bim;
+    private double    orgSceneX;
+    private double    orgSceneY;
+    private double    orgTranslateX;
+    private double    orgTranslateY;
+    private TextField zoneIdField;
+    private TextField zoneNumOfPeopleField;
+    private TextField sensorIdField;
+    private TextField sensorDeviceIdField;
+    private ChoiceBox sensorNoteField;
 
     FXBIMExtHandler(BIMExt bim) {
         this.bim = bim;
@@ -71,7 +81,25 @@ class FXBIMExtHandler {
                 gZones.getChildren().add(drawZone(bim, currentLevel, numOfLevels, 10, zone, iter));
                 break;
             }
+
+            if (!zone.getSensors().isEmpty()) {
+                for (SensorExt sensor : zone.getSensors()) {
+                    //if(isOnLevel(sensor.getZ(), level, zone.getCeilingHeight())) {
+                    Circle c = drawSensor(sensor, numOfLevels, 10);
+                    gSensors.getChildren().add(c);
+                    //}
+                }
+            }
         }
+    }
+
+    private Circle drawSensor(SensorExt sensor, double s, double zoom) {
+        final double x = sensor.getX() * zoom;
+        final double y = (s - sensor.getY()) * zoom;
+        Circle c = new Circle(x, y, 5, Color.BLUEVIOLET);
+        c.setOnMousePressed(event -> fillSensorData(sensor));
+
+        return c;
     }
 
     private Polygon drawZone(BIMExt bim, double level, double s, double zoom, ZoneExt z, Iterator<ZoneExt> iter) {
@@ -85,6 +113,8 @@ class FXBIMExtHandler {
                 p.setId(z.getId());
             }
         }
+
+        p.setOnMousePressed(event -> fillZoneData(z));
 
         int valFill = (int) ((z.getNumOfPeople() * 255) / bim.getNumOfPeople()) * 10;
         p.setFill(Color.rgb(0, valFill > 255 ? 255 : valFill, 0));
@@ -128,6 +158,9 @@ class FXBIMExtHandler {
         });
     }
 
+    /**
+     * http://java-buddy.blogspot.ru/2013/07/javafx-drag-and-move-something.html
+     */
     private void setDraggable(Group gRoot) {
         gRoot.setOnMousePressed(mousePressedEvent -> {
             orgSceneX = mousePressedEvent.getSceneX();
@@ -145,5 +178,26 @@ class FXBIMExtHandler {
             ((Group) (mouseDraggedEvent.getSource())).setTranslateX(newTranslateX);
             ((Group) (mouseDraggedEvent.getSource())).setTranslateY(newTranslateY);
         });
+    }
+
+    private void fillZoneData(ZoneExt z) {
+        zoneIdField.setText(z.getId());
+        zoneNumOfPeopleField.setText(String.valueOf(z.getNumOfPeople()));
+    }
+
+    private void fillSensorData(SensorExt s) {
+        sensorIdField.setText(s.getId());
+        sensorDeviceIdField.setText(String.valueOf(s.getDeviceId()));
+    }
+
+    void setZoneFields(TextField zoneIdField, TextField zoneNumOfPeopleField) {
+        this.zoneIdField = zoneIdField;
+        this.zoneNumOfPeopleField = zoneNumOfPeopleField;
+    }
+
+    public void setSensorFields(TextField sensorIdField, TextField sensorDeviceIdField, ChoiceBox sensorNoteField) {
+        this.sensorIdField = sensorIdField;
+        this.sensorDeviceIdField = sensorDeviceIdField;
+        this.sensorNoteField = sensorNoteField;
     }
 }
