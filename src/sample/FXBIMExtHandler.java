@@ -31,6 +31,7 @@ class FXBIMExtHandler {
     }
 
     void drawBIM(Group gRoot) {
+        gRoot.getChildren().remove(0, gRoot.getChildren().size());
         setZoomer(gRoot);
         setDraggable(gRoot);
 
