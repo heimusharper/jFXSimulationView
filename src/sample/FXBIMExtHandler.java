@@ -1,9 +1,12 @@
 package sample;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Group;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
@@ -25,16 +28,19 @@ import static json.geometry.Zone.FLOOR;
  */
 class FXBIMExtHandler {
 
-    private BIMExt    bim;
-    private double    orgSceneX;
-    private double    orgSceneY;
-    private double    orgTranslateX;
-    private double    orgTranslateY;
-    private TextField zoneIdField;
-    private TextField zoneNumOfPeopleField;
-    private TextField sensorIdField;
-    private TextField sensorDeviceIdField;
-    private ChoiceBox sensorNoteField;
+    private BIMExt     bim;
+    private double     orgSceneX;
+    private double     orgSceneY;
+    private double     orgTranslateX;
+    private double     orgTranslateY;
+    private TextField  zoneIdField;
+    private TextField  zoneNumOfPeopleField;
+    private TextField  sensorIdField;
+    private TextField  sensorDeviceIdField;
+    private ChoiceBox  sensorTypeField;
+    private TitledPane sensorTab;
+    private Button     applyChangeSensor;
+    private Button     cancelChangeSensor;
 
     FXBIMExtHandler(BIMExt bim) {
         this.bim = bim;
@@ -97,7 +103,11 @@ class FXBIMExtHandler {
         final double x = sensor.getX() * zoom;
         final double y = (s - sensor.getY()) * zoom;
         Circle c = new Circle(x, y, 5, Color.BLUEVIOLET);
-        c.setOnMousePressed(event -> fillSensorData(sensor));
+        c.setOnMousePressed(event -> {
+            boolean isEditable = false;
+            if (event.isControlDown()) isEditable = true;
+            fillSensorData(sensor, isEditable);
+        });
 
         return c;
     }
@@ -185,9 +195,41 @@ class FXBIMExtHandler {
         zoneNumOfPeopleField.setText(String.valueOf(z.getNumOfPeople()));
     }
 
-    private void fillSensorData(SensorExt s) {
+    private void fillSensorData(SensorExt s, boolean isEditable) {
+        sensorTab.setExpanded(true);
         sensorIdField.setText(s.getId());
         sensorDeviceIdField.setText(String.valueOf(s.getDeviceId()));
+        List<String> types = new ArrayList<>();
+        types.add("UNKNOWN");
+        types.add("TEMPERATURE");
+        types.add("SMOKE");
+        types.add("GENERAL");
+        ObservableList<String> observableList = FXCollections.observableList(types);
+
+        sensorTypeField.setItems(observableList);
+        int index;
+        switch (s.getType()) {
+        case "TEMPERATURE":
+            index = 1;
+            break;
+        case "SMOKE":
+            index = 2;
+            break;
+        case "GENERAL":
+            index = 3;
+            break;
+        default:
+            index = 0;
+        }
+        sensorTypeField.getSelectionModel().select(index);
+
+        if (isEditable) {
+            applyChangeSensor.setVisible(true);
+            cancelChangeSensor.setVisible(true);
+            sensorIdField.setEditable(true);
+            sensorDeviceIdField.setEditable(true);
+            sensorTypeField.setDisable(false);
+        }
     }
 
     void setZoneFields(TextField zoneIdField, TextField zoneNumOfPeopleField) {
@@ -195,9 +237,13 @@ class FXBIMExtHandler {
         this.zoneNumOfPeopleField = zoneNumOfPeopleField;
     }
 
-    public void setSensorFields(TextField sensorIdField, TextField sensorDeviceIdField, ChoiceBox sensorNoteField) {
+    void setSensorFields(TextField sensorIdField, TextField sensorDeviceIdField, ChoiceBox sensorTypeField,
+            TitledPane sensorTab, Button applyChangeSensor, Button cancelChangeSensor) {
         this.sensorIdField = sensorIdField;
         this.sensorDeviceIdField = sensorDeviceIdField;
-        this.sensorNoteField = sensorNoteField;
+        this.sensorTypeField = sensorTypeField;
+        this.sensorTab = sensorTab;
+        this.applyChangeSensor = applyChangeSensor;
+        this.cancelChangeSensor = cancelChangeSensor;
     }
 }

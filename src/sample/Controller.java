@@ -32,6 +32,9 @@ public class Controller implements Initializable {
     @FXML public TextField sensorIdField;
     @FXML public TextField sensorDeviceIdField;
     @FXML public ChoiceBox sensorTypeField;
+    @FXML public TitledPane sensorTab;
+    @FXML public Button     applyChangeSensor;
+    @FXML public Button     cancelChangeSensor;
 
     @FXML public TitledPane networkTab;
     @FXML public TextField  hostField;
@@ -55,7 +58,8 @@ public class Controller implements Initializable {
             FXBIMExtHandler fxbimExtHandler = new FXBIMExtHandler(bim);
             fxbimExtHandler.drawBIM(gRoot);
             fxbimExtHandler.setZoneFields(zoneIdField, zoneNumOfPeopleField);
-            fxbimExtHandler.setSensorFields(sensorIdField, sensorDeviceIdField, sensorTypeField);
+            fxbimExtHandler.setSensorFields(sensorIdField, sensorDeviceIdField, sensorTypeField, sensorTab,
+                    applyChangeSensor, cancelChangeSensor);
         } catch (NullPointerException e) {
             System.out.println("File not selected");
         } catch (FileNotFoundException e) {
@@ -112,5 +116,16 @@ public class Controller implements Initializable {
     public void disconnectHandler(ActionEvent event) {
         networkTab.setExpanded(false);
         networkTab.setVisible(false);
+    }
+
+    public void applyChangeSensorHandler(ActionEvent event) {
+    }
+
+    public void cancelChangeSensorHandler(ActionEvent event) {
+        applyChangeSensor.setVisible(false);
+        cancelChangeSensor.setVisible(false);
+        sensorIdField.setEditable(false);
+        sensorDeviceIdField.setEditable(false);
+        sensorTypeField.setDisable(true);
     }
 }

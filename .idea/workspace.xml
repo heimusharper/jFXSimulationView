@@ -59,11 +59,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Controller.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Controller.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/sample/Controller.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="234">
-              <caret line="46" column="52" lean-forward="true" selection-start-line="46" selection-start-column="52" selection-end-line="46" selection-end-column="52" />
+            <state relative-caret-position="206">
+              <caret line="125" column="45" lean-forward="true" selection-start-line="125" selection-start-column="45" selection-end-line="125" selection-end-column="45" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#loadBim#0;class#Controller#0" expanded="false" />
@@ -72,11 +72,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FXBIMExtHandler.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="FXBIMExtHandler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/sample/FXBIMExtHandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
-              <caret line="34" column="31" lean-forward="false" selection-start-line="34" selection-start-column="31" selection-end-line="34" selection-end-column="31" />
+            <state relative-caret-position="382">
+              <caret line="202" column="29" lean-forward="true" selection-start-line="202" selection-start-column="29" selection-end-line="202" selection-end-column="29" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#setDraggable#0;class#FXBIMExtHandler#0" expanded="false" />
@@ -91,22 +91,9 @@
             <state />
           </provider>
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="199" column="70" lean-forward="false" selection-start-line="199" selection-start-column="70" selection-end-line="199" selection-end-column="70" />
+            <state relative-caret-position="212">
+              <caret line="171" column="80" lean-forward="false" selection-start-line="171" selection-start-column="80" selection-end-line="171" selection-end-column="80" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Sensor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/json/geometry/Sensor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1008">
-              <caret line="111" column="20" lean-forward="false" selection-start-line="111" selection-start-column="20" selection-end-line="111" selection-end-column="20" />
-              <folding>
-                <element signature="e#2703#2704#0" expanded="true" />
-                <element signature="e#2730#2731#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -142,8 +129,8 @@
         <option value="$PROJECT_DIR$/src/sample/AnimatedZoomOperator.java" />
         <option value="$PROJECT_DIR$/src/json/geometry/Sensor.java" />
         <option value="$PROJECT_DIR$/src/sample/sample.fxml" />
-        <option value="$PROJECT_DIR$/src/sample/FXBIMExtHandler.java" />
         <option value="$PROJECT_DIR$/src/sample/Controller.java" />
+        <option value="$PROJECT_DIR$/src/sample/FXBIMExtHandler.java" />
       </list>
     </option>
   </component>
@@ -575,12 +562,12 @@
       <workItem from="1485437605356" duration="761000" />
       <workItem from="1485452157460" duration="3486000" />
       <workItem from="1485495601376" duration="29041000" />
-      <workItem from="1485536499927" duration="4874000" />
+      <workItem from="1485536499927" duration="8021000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="39464000" />
+    <option name="totallyTimeSpent" value="42611000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="0" width="1368" height="769" extended-state="6" />
@@ -943,17 +930,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/sample/FXBIMExtHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="34" column="31" lean-forward="false" selection-start-line="34" selection-start-column="31" selection-end-line="34" selection-end-column="31" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#setDraggable#0;class#FXBIMExtHandler#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/json/geometry/Sensor.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1008">
@@ -970,19 +946,30 @@
         <state />
       </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="199" column="70" lean-forward="false" selection-start-line="199" selection-start-column="70" selection-end-line="199" selection-end-column="70" />
+        <state relative-caret-position="212">
+          <caret line="171" column="80" lean-forward="false" selection-start-line="171" selection-start-column="80" selection-end-line="171" selection-end-column="80" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/sample/Controller.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="46" column="52" lean-forward="true" selection-start-line="46" selection-start-column="52" selection-end-line="46" selection-end-column="52" />
+        <state relative-caret-position="206">
+          <caret line="125" column="45" lean-forward="true" selection-start-line="125" selection-start-column="45" selection-end-line="125" selection-end-column="45" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#loadBim#0;class#Controller#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/sample/FXBIMExtHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="382">
+          <caret line="202" column="29" lean-forward="true" selection-start-line="202" selection-start-column="29" selection-end-line="202" selection-end-column="29" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#setDraggable#0;class#FXBIMExtHandler#0" expanded="false" />
           </folding>
         </state>
       </provider>
