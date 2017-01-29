@@ -1,17 +1,14 @@
 package sample;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.Group;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import json.extendetGeometry.BIMExt;
 import json.extendetGeometry.SensorExt;
+import json.extendetGeometry.TransitionExt;
 import json.extendetGeometry.ZoneExt;
 
 import java.util.ArrayList;
@@ -26,27 +23,21 @@ import static json.geometry.Zone.FLOOR;
  * <p>
  * Created by boris on 27.01.17.
  */
-class FXBIMExtHandler {
+class FxBimHandler {
 
     private BIMExt     bim;
+    private Controller controller;
     private double     orgSceneX;
     private double     orgSceneY;
     private double     orgTranslateX;
     private double     orgTranslateY;
-    private TextField  zoneIdField;
-    private TextField  zoneNumOfPeopleField;
-    private TextField  sensorIdField;
-    private TextField  sensorDeviceIdField;
-    private ChoiceBox  sensorTypeField;
-    private TitledPane sensorTab;
-    private Button     applyChangeSensor;
-    private Button     cancelChangeSensor;
 
-    FXBIMExtHandler(BIMExt bim) {
+    FxBimHandler(BIMExt bim, Controller controller) {
         this.bim = bim;
+        this.controller = controller;
     }
 
-    void drawBIM(Group gRoot) {
+    void drawBim(Group gRoot) {
         gRoot.getChildren().remove(0, gRoot.getChildren().size());
         setZoomer(gRoot);
         setDraggable(gRoot);
@@ -84,24 +75,54 @@ class FXBIMExtHandler {
             switch (zone.getType()) {
             case FLOOR:
                 if (!insidePoint(currentLevel, zone.getLevel())) continue;
-                gZones.getChildren().add(drawZone(bim, currentLevel, numOfLevels, 10, zone, iter));
+                gZones.getChildren().add(drawZone(bim, numOfLevels, zone, iter));
                 break;
+            default:
+                gZones.getChildren().add(drawZone(bim, numOfLevels, zone, iter));
             }
 
-            if (!zone.getSensors().isEmpty()) {
-                for (SensorExt sensor : zone.getSensors()) {
-                    //if(isOnLevel(sensor.getZ(), level, zone.getCeilingHeight())) {
-                    Circle c = drawSensor(sensor, numOfLevels, 10);
-                    gSensors.getChildren().add(c);
-                    //}
-                }
+            if (!zone.getSensors().isEmpty()) for (SensorExt sensor : zone.getSensors()) {
+                //if(isOnLevel(sensor.getZ(), level, zone.getCeilingHeight())) {
+                Circle c = drawSensor(sensor, numOfLevels);
+                gSensors.getChildren().add(c);
+                //}
+            }
+
+            if (!zone.getTransitionList().isEmpty()) for (TransitionExt transition : zone.getTransitionList()) {
+                drawTransition(transition, gTransitions, numOfLevels);
             }
         }
     }
 
-    private Circle drawSensor(SensorExt sensor, double s, double zoom) {
-        final double x = sensor.getX() * zoom;
-        final double y = (s - sensor.getY()) * zoom;
+    private void drawTransition(TransitionExt transition, Group gTransitions, int numOfLevels) {
+        int pointsNumber = transition.getXyz().length;
+        if (pointsNumber > 2) {
+            // Создание полигонов
+            Polygon p = new Polygon();
+            for (int j = 0; j < pointsNumber; j++) {
+                double x = transition.getXyz(j, 0) * 10.0;
+                double y = (numOfLevels - transition.getXyz(j, 1)) * 10.0;
+                p.getPoints().addAll(x, y);
+            }
+            p.setFill(transition.isExit() ? Color.CADETBLUE : Color.HOTPINK);
+            p.setOnMouseClicked(event -> {
+                controller.transitionTab.setExpanded(true);
+            });
+            gTransitions.getChildren().add(p);
+        } else if (pointsNumber == 2) {
+            Line p = new Line();
+            p.setStartX(transition.getXyz(0, 0) * 10.0);
+            p.setStartY((numOfLevels - transition.getXyz(0, 1)) * 10.0);
+            p.setEndX(transition.getXyz(1, 0) * 10.0);
+            p.setEndY((numOfLevels - transition.getXyz(1, 1)) * 10.0);
+            p.setStroke(transition.isExit() ? Color.GOLD : Color.HOTPINK);
+            gTransitions.getChildren().add(p);
+        }
+    }
+
+    private Circle drawSensor(SensorExt sensor, double s) {
+        final double x = sensor.getX() * 10.0;
+        final double y = (s - sensor.getY()) * 10.0;
         Circle c = new Circle(x, y, 5, Color.BLUEVIOLET);
         c.setOnMousePressed(event -> {
             boolean isEditable = false;
@@ -112,19 +133,22 @@ class FXBIMExtHandler {
         return c;
     }
 
-    private Polygon drawZone(BIMExt bim, double level, double s, double zoom, ZoneExt z, Iterator<ZoneExt> iter) {
+    private Polygon drawZone(BIMExt bim, double s, ZoneExt z, Iterator<ZoneExt> iter) {
         final Polygon p = new Polygon();
 
         for (int c = 0; c < z.getXyz().length; c++) {  // кольца
             for (int j = 0; j < z.getXyz()[0].length; j++) {  // точки
-                double x = z.getXyz(c, j, 0) * zoom;
-                double y = (s - z.getXyz(c, j, 1)) * zoom;
+                double x = z.getXyz(c, j, 0) * 10.0;
+                double y = (s - z.getXyz(c, j, 1)) * 10.0;
                 p.getPoints().addAll(x, y);
                 p.setId(z.getId());
             }
         }
 
-        p.setOnMousePressed(event -> fillZoneData(z));
+        p.setOnMousePressed(event -> {
+            controller.zoneTab.setExpanded(true);
+            fillZoneData(z);
+        });
 
         int valFill = (int) ((z.getNumOfPeople() * 255) / bim.getNumOfPeople()) * 10;
         p.setFill(Color.rgb(0, valFill > 255 ? 255 : valFill, 0));
@@ -191,22 +215,22 @@ class FXBIMExtHandler {
     }
 
     private void fillZoneData(ZoneExt z) {
-        zoneIdField.setText(z.getId());
-        zoneNumOfPeopleField.setText(String.valueOf(z.getNumOfPeople()));
+        controller.zoneIdField.setText(z.getId());
+        controller.zoneNumOfPeopleField.setText(String.valueOf(z.getNumOfPeople()));
     }
 
     private void fillSensorData(SensorExt s, boolean isEditable) {
-        sensorTab.setExpanded(true);
-        sensorIdField.setText(s.getId());
-        sensorDeviceIdField.setText(String.valueOf(s.getDeviceId()));
+        controller.sensorTab.setExpanded(true);
+        controller.sensorIdField.setText(s.getId());
+        controller.sensorDeviceIdField.setText(String.valueOf(s.getDeviceId()));
+
         List<String> types = new ArrayList<>();
         types.add("UNKNOWN");
         types.add("TEMPERATURE");
         types.add("SMOKE");
         types.add("GENERAL");
-        ObservableList<String> observableList = FXCollections.observableList(types);
+        controller.sensorTypeField.setItems(FXCollections.observableList(types));
 
-        sensorTypeField.setItems(observableList);
         int index;
         switch (s.getType()) {
         case "TEMPERATURE":
@@ -221,29 +245,17 @@ class FXBIMExtHandler {
         default:
             index = 0;
         }
-        sensorTypeField.getSelectionModel().select(index);
+        controller.sensorTypeField.getSelectionModel().select(index);
 
         if (isEditable) {
-            applyChangeSensor.setVisible(true);
-            cancelChangeSensor.setVisible(true);
-            sensorIdField.setEditable(true);
-            sensorDeviceIdField.setEditable(true);
-            sensorTypeField.setDisable(false);
+            controller.sensorIdField.setEditable(true);
+            controller.sensorDeviceIdField.setEditable(true);
+            controller.sensorTypeField.setDisable(false);
         }
     }
 
-    void setZoneFields(TextField zoneIdField, TextField zoneNumOfPeopleField) {
-        this.zoneIdField = zoneIdField;
-        this.zoneNumOfPeopleField = zoneNumOfPeopleField;
-    }
-
-    void setSensorFields(TextField sensorIdField, TextField sensorDeviceIdField, ChoiceBox sensorTypeField,
-            TitledPane sensorTab, Button applyChangeSensor, Button cancelChangeSensor) {
-        this.sensorIdField = sensorIdField;
-        this.sensorDeviceIdField = sensorDeviceIdField;
-        this.sensorTypeField = sensorTypeField;
-        this.sensorTab = sensorTab;
-        this.applyChangeSensor = applyChangeSensor;
-        this.cancelChangeSensor = cancelChangeSensor;
+    private void fillTransitionData(TransitionExt t) {
+        controller.transitionIdField.setText(t.getId());
+        controller.transitionWidthField.setText(String.valueOf(t.getWidth()));
     }
 }
