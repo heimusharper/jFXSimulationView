@@ -21,11 +21,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="content" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane fx:id="content" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
     <children>
         <BorderPane layoutX="400.0" layoutY="243.0" prefHeight="700.0" prefWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <top>
-                <ToolBar fx:id="toolBar" prefHeight="40.0" prefWidth="706.0" BorderPane.alignment="CENTER">
+                <ToolBar fx:id="toolBar" cache="true" prefHeight="40.0" prefWidth="706.0" BorderPane.alignment="CENTER">
                     <items>
                         <Button fx:id="openFile" cache="true" defaultButton="true" onAction="#openFileHandler" text="Open">
                             <cursor>
@@ -57,7 +57,22 @@
                                 <Cursor fx:constant="HAND" />
                             </cursor>
                         </Button>
-                        <TextField fx:id="searchNode" promptText="Enter ID node" />
+                        <TextField fx:id="searchNodeField" promptText="Enter ID node" />
+                  <Button fx:id="searchNode" mnemonicParsing="false" text="Search" />
+                  <Group>
+                     <children>
+                        <HBox alignment="CENTER" cache="true" prefHeight="30.0" prefWidth="200.0">
+                           <children>
+                              <Button fx:id="playSimulation" mnemonicParsing="false" onAction="#playSimulationHandler" visible="false">
+                                 <HBox.margin>
+                                    <Insets right="5.0" />
+                                 </HBox.margin>
+                              </Button>
+                              <Button fx:id="stopSimulation" mnemonicParsing="false" onAction="#stopSimulationHandler" visible="false" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </Group>
                     </items>
                 </ToolBar>
             </top>
@@ -88,7 +103,7 @@
                 </HBox>
             </bottom>
             <center>
-                <SplitPane dividerPositions="0.6081504702194357" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                <SplitPane dividerPositions="0.7136150234741784" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                     <items>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                             <children>
@@ -203,7 +218,7 @@
                                                 <VBox prefHeight="200.0" prefWidth="100.0" />
                                             </content>
                                         </TitledPane>
-                                        <TitledPane fx:id="networkTab" animated="false" cache="true" prefHeight="608.0" prefWidth="292.0" text="Network">
+                                        <TitledPane fx:id="networkTab" animated="false" cache="true" prefHeight="608.0" prefWidth="292.0" text="Network" visible="false">
                                             <content>
                                                 <VBox prefHeight="200.0" prefWidth="100.0">
                                                     <children>
@@ -225,7 +240,7 @@
                                                                 <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                                                     <children>
                                                                         <Button mnemonicParsing="false" onAction="#connectHandler" text="connect" />
-                                                                        <Button mnemonicParsing="false" onAction="#disconnectHandler" text="disconnect">
+                                                                        <Button fx:id="disconnect" disable="true" mnemonicParsing="false" onAction="#disconnectHandler" text="disconnect">
                                                                             <HBox.margin>
                                                                                 <Insets left="5.0" />
                                                                             </HBox.margin>

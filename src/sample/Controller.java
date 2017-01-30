@@ -1,27 +1,32 @@
 package sample;
 
+import bus.EBus;
+import bus.Eventable;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import json.extendetGeometry.BIMExt;
 import json.extendetGeometry.BIMLoader;
+import tcp.TCPClient;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
-    static {
-        System.setProperty("user.workspace", "/home/boris/workspace/java/jSimulationMoving/src/main/resources");
-    }
+    private final Image imagePlay;
+    private final Image imageStop;
 
     @FXML public Pane       canvas;
     @FXML public AnchorPane content;
@@ -41,6 +46,22 @@ public class Controller implements Initializable {
     @FXML public TitledPane transitionTab;
     @FXML public TextField  transitionIdField;
     @FXML public TextField  transitionWidthField;
+    @FXML public TextField  searchNodeField;
+    @FXML public Button     searchNode;
+    @FXML public Button     playSimulation;
+    @FXML public Button     stopSimulation;
+    @FXML public Button     disconnect;
+
+    private TCPClient client;
+
+    {
+        System.setProperty("user.workspace", "/home/boris/workspace/java/jSimulationMoving/src/main/resources");
+        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+        InputStream isPlay = classloader.getResourceAsStream("play.png");
+        InputStream isStop = classloader.getResourceAsStream("stop.png");
+        imagePlay = new Image(isPlay);
+        imageStop = new Image(isStop);
+    }
 
     public void openFileHandler() {
         FileChooser fileChooser = new FileChooser();
@@ -89,6 +110,9 @@ public class Controller implements Initializable {
             gRoot.setLayoutY(newValue.doubleValue());
             gRoot.prefHeight(newValue.doubleValue());
         });
+
+        playSimulation.setGraphic(new ImageView(imagePlay));
+        stopSimulation.setGraphic(new ImageView(imageStop));
     }
 
     public void networkHandler() {
@@ -102,10 +126,30 @@ public class Controller implements Initializable {
         if (hostField.getText().isEmpty()) hostField.setText("localhost");
         if (!portField.getText().isEmpty())
             socketAddress = new InetSocketAddress(hostField.getText(), Integer.parseInt(portField.getText()));
+        else return;
+
+        client = new TCPClient(socketAddress.getHostName(), socketAddress.getPort());
+        client.start();
+
+        disconnect.setDisable(false);
+        playSimulation.setVisible(true);
+        stopSimulation.setVisible(true);
     }
 
-    public void disconnectHandler() {
+    public void disconnectHandler() throws InterruptedException {
+        if (client.isAlive()) client.interrupt();
         networkTab.setExpanded(false);
         networkTab.setVisible(false);
+        disconnect.setDisable(true);
+        playSimulation.setVisible(false);
+        stopSimulation.setVisible(false);
+    }
+
+    public void playSimulationHandler() {
+        EBus.post("start");
+    }
+
+    public void stopSimulationHandler() {
+        EBus.post("stop");
     }
 }

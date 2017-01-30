@@ -15,7 +15,7 @@ public class Main extends Application {
     @Override public void start(Stage primaryStage) throws Exception {
         AnchorPane root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         primaryStage.setTitle("FXSimulationView");
-        primaryStage.setScene(new Scene(root, 640, 480));
+        primaryStage.setScene(new Scene(root, 1280, 800));
         primaryStage.show();
     }
 }

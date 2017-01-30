@@ -1,15 +1,20 @@
 package sample;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Shape;
 import json.extendetGeometry.BIMExt;
 import json.extendetGeometry.SensorExt;
 import json.extendetGeometry.TransitionExt;
 import json.extendetGeometry.ZoneExt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,6 +29,8 @@ import static json.geometry.Zone.FLOOR;
  * Created by boris on 27.01.17.
  */
 class FxBimHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(FxBimHandler.class);
 
     private BIMExt     bim;
     private Controller controller;
@@ -51,6 +58,28 @@ class FxBimHandler {
         for (int i = 0; i < levels.size(); i++) {
             drawLevel(gRoot, levels, i);
         }
+
+        searchNodeHandler(gRoot);
+    }
+
+    private void searchNodeHandler(Group gRoot) {
+        controller.searchNode.setOnMouseClicked((MouseEvent event) -> {
+            String uuidNode = controller.searchNodeField.getText();
+            if (uuidNode.isEmpty()) return;
+
+            ObservableList<Node> allGroups = gRoot.getChildren();
+            for (Node allGroup : allGroups) {
+                ObservableList<Node> node = ((Group) allGroup).getChildren();
+                for (Node aNode : node) {
+                    Shape shape = (Shape) aNode;
+                    String uuid = shape.getId();
+                    if (uuid == null) continue; // Не знаю, почему вылазит null
+                    if (!uuid.equals(uuidNode)) continue;
+                    shape.setFill(Color.TOMATO);
+                    return;
+                }
+            }
+        });
     }
 
     private void drawLevel(Group gRoot, List<Double> levels, int i) {
@@ -58,11 +87,17 @@ class FxBimHandler {
         int numOfLevels = levels.size();
 
         Group gZones = new Group();
+        gZones.setId("gZones_" + i);
         Group gTransitions = new Group();
+        gTransitions.setId("gTransitions_" + i);
         Group gSensors = new Group();
+        gSensors.setId("gSensors_" + i);
         Group gArrows = new Group();
+        gArrows.setId("gArrows_" + i);
         Group gLights = new Group();
+        gLights.setId("gLights_" + i);
         gRoot.getChildren().addAll(gZones, gTransitions, gSensors, gArrows, gLights);
+        gRoot.setId("gRoot");
 
         for (Iterator<ZoneExt> iter = bim.getZones().values().iterator(); iter.hasNext(); ) {
             ZoneExt zone = iter.next();
@@ -81,24 +116,19 @@ class FxBimHandler {
                 gZones.getChildren().add(drawZone(bim, numOfLevels, zone, iter));
             }
 
-            if (!zone.getSensors().isEmpty()) for (SensorExt sensor : zone.getSensors()) {
-                //if(isOnLevel(sensor.getZ(), level, zone.getCeilingHeight())) {
-                Circle c = drawSensor(sensor, numOfLevels);
-                gSensors.getChildren().add(c);
-                //}
-            }
+            if (!zone.getSensors().isEmpty()) for (SensorExt sensor : zone.getSensors())
+                gSensors.getChildren().add(drawSensor(sensor, numOfLevels));
 
-            if (!zone.getTransitionList().isEmpty()) for (TransitionExt transition : zone.getTransitionList()) {
-                drawTransition(transition, gTransitions, numOfLevels);
-            }
+            if (!zone.getTransitionList().isEmpty()) for (TransitionExt transition : zone.getTransitionList())
+                gTransitions.getChildren().add(drawTransition(transition, numOfLevels));
         }
     }
 
-    private void drawTransition(TransitionExt transition, Group gTransitions, int numOfLevels) {
+    private Polygon drawTransition(TransitionExt transition, int numOfLevels) {
         int pointsNumber = transition.getXyz().length;
+        Polygon p = new Polygon();
         if (pointsNumber > 2) {
             // Создание полигонов
-            Polygon p = new Polygon();
             for (int j = 0; j < pointsNumber; j++) {
                 double x = transition.getXyz(j, 0) * 10.0;
                 double y = (numOfLevels - transition.getXyz(j, 1)) * 10.0;
@@ -107,17 +137,20 @@ class FxBimHandler {
             p.setFill(transition.isExit() ? Color.CADETBLUE : Color.HOTPINK);
             p.setOnMouseClicked(event -> {
                 controller.transitionTab.setExpanded(true);
+                fillTransitionData(transition);
             });
-            gTransitions.getChildren().add(p);
+            p.setId(transition.getId());
         } else if (pointsNumber == 2) {
-            Line p = new Line();
+            /*Line p = new Line();
             p.setStartX(transition.getXyz(0, 0) * 10.0);
             p.setStartY((numOfLevels - transition.getXyz(0, 1)) * 10.0);
             p.setEndX(transition.getXyz(1, 0) * 10.0);
             p.setEndY((numOfLevels - transition.getXyz(1, 1)) * 10.0);
             p.setStroke(transition.isExit() ? Color.GOLD : Color.HOTPINK);
-            gTransitions.getChildren().add(p);
+            p.setId(transition.getId());
+            gTransitions.getChildren().add(p);*/
         }
+        return p;
     }
 
     private Circle drawSensor(SensorExt sensor, double s) {
@@ -129,6 +162,7 @@ class FxBimHandler {
             if (event.isControlDown()) isEditable = true;
             fillSensorData(sensor, isEditable);
         });
+        c.setId(c.getId());
 
         return c;
     }
@@ -141,10 +175,10 @@ class FxBimHandler {
                 double x = z.getXyz(c, j, 0) * 10.0;
                 double y = (s - z.getXyz(c, j, 1)) * 10.0;
                 p.getPoints().addAll(x, y);
-                p.setId(z.getId());
             }
         }
 
+        p.setId(z.getId());
         p.setOnMousePressed(event -> {
             controller.zoneTab.setExpanded(true);
             fillZoneData(z);
@@ -258,4 +292,5 @@ class FxBimHandler {
         controller.transitionIdField.setText(t.getId());
         controller.transitionWidthField.setText(String.valueOf(t.getWidth()));
     }
+
 }
