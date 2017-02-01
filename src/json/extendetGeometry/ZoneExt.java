@@ -27,6 +27,8 @@
 
 package json.extendetGeometry;
 
+import bus.Eventable;
+import com.google.common.eventbus.Subscribe;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
@@ -35,6 +37,7 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import json.geometry.Zone;
+import tcp.ChangePeopleEvent;
 
 import java.util.ArrayList;
 
@@ -44,7 +47,7 @@ import java.util.ArrayList;
  * <p>
  * Created by boris on 17.12.16.     Modification of 27.12.2016
  */
-public class ZoneExt extends Zone<LightExt, SensorExt, SpeakerExt> {
+public class ZoneExt extends Zone<LightExt, SensorExt, SpeakerExt> implements Eventable {
 
     /**
      * Минимальное и максимальное значение по оси Z
@@ -79,7 +82,7 @@ public class ZoneExt extends Zone<LightExt, SensorExt, SpeakerExt> {
     private ArrayList<TransitionExt> transitionList = new ArrayList<>();
 
     private DoubleProperty numberOfPeople = new SimpleDoubleProperty(getNumOfPeople());
-    
+
     private double level = -1;
 
     private boolean isSafetyZone;
@@ -88,6 +91,7 @@ public class ZoneExt extends Zone<LightExt, SensorExt, SpeakerExt> {
         setPermeability(1);
         setNTay(0);
         setSafetyZone(false);
+        registeredOnBus(this);
     }
 
     /**
@@ -316,6 +320,11 @@ public class ZoneExt extends Zone<LightExt, SensorExt, SpeakerExt> {
         this.numberOfPeople.set(numberOfPeople);
     }
 
+    @Subscribe public void setNumberOfPeople(ChangePeopleEvent changePeopleEvent) {
+        if (!changePeopleEvent.getZid().equals(getId())) return;
+        this.numberOfPeople.set(changePeopleEvent.getNumOfPeople());
+    }
+
     public DoubleProperty numberOfPeopleProperty() {
         return numberOfPeople;
     }
@@ -328,13 +337,13 @@ public class ZoneExt extends Zone<LightExt, SensorExt, SpeakerExt> {
         isSafetyZone = safetyZone;
     }
 
-	public double getLevel() {
-		if (level != -1) return level;
-		setLevel(getMinZ());
-		return level;
-	}
+    public double getLevel() {
+        if (level != -1) return level;
+        setLevel(getMinZ());
+        return level;
+    }
 
-	private void setLevel(double level) {
-		this.level = level;
-	}
+    private void setLevel(double level) {
+        this.level = level;
+    }
 }

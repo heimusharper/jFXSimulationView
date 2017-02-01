@@ -1,7 +1,6 @@
 package sample;
 
 import bus.EBus;
-import bus.Eventable;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -14,6 +13,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import json.extendetGeometry.BIMExt;
 import json.extendetGeometry.BIMLoader;
+import json.extendetGeometry.BIMUtils;
+import json.extendetGeometry.GeometryBIM;
 import tcp.TCPClient;
 
 import java.io.File;
@@ -51,16 +52,27 @@ public class Controller implements Initializable {
     @FXML public Button     playSimulation;
     @FXML public Button     stopSimulation;
     @FXML public Button     disconnect;
+    @FXML public Button     sensorApplyChange;
 
     private TCPClient client;
+    private BIMExt    bim;
 
     {
         System.setProperty("user.workspace", "/home/boris/workspace/java/jSimulationMoving/src/main/resources");
+
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         InputStream isPlay = classloader.getResourceAsStream("play.png");
         InputStream isStop = classloader.getResourceAsStream("stop.png");
         imagePlay = new Image(isPlay);
         imageStop = new Image(isStop);
+    }
+
+    private BIMExt getBim() {
+        return bim;
+    }
+
+    private void setBim(File file) throws FileNotFoundException {
+        this.bim = new BIMLoader<>(new FileInputStream(file), BIMExt.class).getBim();
     }
 
     public void openFileHandler() {
@@ -70,8 +82,7 @@ public class Controller implements Initializable {
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON", "*.json"),
                 new FileChooser.ExtensionFilter("All files", "*.*"));
         try {
-            File file = fileChooser.showOpenDialog(new Stage());
-            BIMExt bim = loadBim(file);
+            setBim(fileChooser.showOpenDialog(new Stage()));
             FxBimHandler bimHandler = new FxBimHandler(bim, this);
             bimHandler.drawBim(gRoot);
         } catch (NullPointerException e) {
@@ -79,16 +90,17 @@ public class Controller implements Initializable {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-    }
 
-    private BIMExt loadBim(File file) throws FileNotFoundException {
-        FileInputStream fis = new FileInputStream(file);
-        BIMLoader<BIMExt> bimLoader = new BIMLoader<>(fis, BIMExt.class);
-
-        return bimLoader.getBim();
+        GeometryBIM size = BIMUtils.size(getBim());
+        System.out.println(size);
     }
 
     public void saveFileHandler() {
+        try {
+            Thread.sleep(1000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void addSensorHandler() {
@@ -137,7 +149,7 @@ public class Controller implements Initializable {
     }
 
     public void disconnectHandler() throws InterruptedException {
-        if (client.isAlive()) client.interrupt();
+        client.stopClient(); // Не работает походу =)
         networkTab.setExpanded(false);
         networkTab.setVisible(false);
         disconnect.setDisable(true);

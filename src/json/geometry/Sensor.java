@@ -27,6 +27,9 @@
 
 package json.geometry;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 /**
  * Класс, описывающий беспроводное устройство - сенсор с датчиками.
  *

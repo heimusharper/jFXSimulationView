@@ -50,9 +50,7 @@ public class BIMExt extends BIM<RoomExt, TransitionExt> {
      * Выделена отдельно. Необходима для работы моделирования. Является
      * вершиной графа.
      */
-    private SafetyZone safetyZone;
-
-    // ------ Характеристики здания : START ------
+    private SafetyZone               safetyZone;
     /**
      * Список зон в здании
      */
@@ -61,18 +59,16 @@ public class BIMExt extends BIM<RoomExt, TransitionExt> {
      * Список эвакуационных выходов
      */
     private List<TransitionExt>      exitsTransition;
-
     /**
      * Количество людей в здании
      */
-    private double numOfPeople;
+    private double                   numOfPeople;
+
+    // ------ Характеристики здания : START ------
     /**
      * Количество выходов из здания
      */
-    private int    numOfExits;
-
-    // ------ Характеристики здания : END ------
-
+    private int                   numOfExits;
     /**
      * Пток зон
      */
@@ -81,6 +77,8 @@ public class BIMExt extends BIM<RoomExt, TransitionExt> {
      * Пток проемов
      */
     private Stream<TransitionExt> transitionStream;
+
+    // ------ Характеристики здания : END ------
 
     /**
      * @return Список зон
@@ -110,19 +108,14 @@ public class BIMExt extends BIM<RoomExt, TransitionExt> {
      * @return Количество людей в здании
      */
     public double getNumOfPeople() {
-        return numOfPeople == 0 ?
-                getZonesStream().mapToDouble(ZoneExt::getNumOfPeople).sum() :
-                numOfPeople;
+        return numOfPeople == 0 ? getZonesStream().mapToDouble(ZoneExt::getNumOfPeople).sum() : numOfPeople;
     }
 
     /**
      * @return Количество эвакуационных выходов
      */
     public int getNumOfExits() {
-        return numOfExits == 0 ?
-                (int) getTransitionStream().filter(TransitionExt::hasNullZone)
-                        .count() :
-                numOfExits;
+        return numOfExits == 0 ? (int) getTransitionStream().filter(TransitionExt::hasNullZone).count() : numOfExits;
     }
 
     /**
@@ -131,9 +124,7 @@ public class BIMExt extends BIM<RoomExt, TransitionExt> {
     public List<TransitionExt> getExitsTransition() {
         if (exitsTransition != null) return exitsTransition;
 
-        exitsTransition = getTransitionStream()
-                .filter(TransitionExt::hasNullZone)
-                .collect(Collectors.toList());
+        exitsTransition = getTransitionStream().filter(TransitionExt::hasNullZone).collect(Collectors.toList());
         return exitsTransition;
     }
 
@@ -183,8 +174,7 @@ public class BIMExt extends BIM<RoomExt, TransitionExt> {
      * Позволяет открыть поток проемов
      */
     private void setTransitionStream() {
-        transitionStream = getTransitions().stream()
-                .filter(TransitionExt::hasNullZone);
+        transitionStream = getTransitions().stream().filter(TransitionExt::hasNullZone);
     }
 
     /**

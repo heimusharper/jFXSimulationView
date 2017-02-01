@@ -25,6 +25,8 @@ public class TCPClient extends Thread {
     private static Socket socket;
     private String host = SERVER_HOST;
     private int    port = SERVER_PORT;
+    private InputHandler  inputHandler;
+    private OutputHandler outputHandler;
 
     public TCPClient(String host, int port) {
         this.host = host;
@@ -45,10 +47,10 @@ public class TCPClient extends Thread {
         }
         log.info("Connected to server on {}:{}", getSocket().getInetAddress(), getSocket().getPort());
 
-        InputHandler inputHandler = new InputHandler(getSocket());
+        inputHandler = new InputHandler(getSocket());
         inputHandler.start();
 
-        OutputHandler outputHandler = new OutputHandler(getSocket());
+        outputHandler = new OutputHandler(getSocket());
         outputHandler.start();
     }
 
@@ -58,6 +60,16 @@ public class TCPClient extends Thread {
 
     private void openSocket(Socket clientSocket) {
         socket = clientSocket;
+    }
+
+    public void stopClient() {
+        try {
+            this.join();
+            inputHandler.join();
+            outputHandler.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private class OutputHandler extends Thread implements Eventable {

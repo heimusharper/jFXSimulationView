@@ -102,7 +102,7 @@ class FxBimHandler {
         for (Iterator<ZoneExt> iter = bim.getZones().values().iterator(); iter.hasNext(); ) {
             ZoneExt zone = iter.next();
             if (zone.isSafetyZone()) {
-                iter.remove();
+                //                iter.remove();
                 continue; // Отсекаем безопасную зону, она не имеет геометрических параметров
             }
 
@@ -162,6 +162,7 @@ class FxBimHandler {
             if (event.isControlDown()) isEditable = true;
             fillSensorData(sensor, isEditable);
         });
+
         c.setId(c.getId());
 
         return c;
@@ -170,13 +171,12 @@ class FxBimHandler {
     private Polygon drawZone(BIMExt bim, double s, ZoneExt z, Iterator<ZoneExt> iter) {
         final Polygon p = new Polygon();
 
-        for (int c = 0; c < z.getXyz().length; c++) {  // кольца
+        for (int c = 0; c < z.getXyz().length; c++) // кольца
             for (int j = 0; j < z.getXyz()[0].length; j++) {  // точки
                 double x = z.getXyz(c, j, 0) * 10.0;
                 double y = (s - z.getXyz(c, j, 1)) * 10.0;
                 p.getPoints().addAll(x, y);
             }
-        }
 
         p.setId(z.getId());
         p.setOnMousePressed(event -> {
@@ -193,7 +193,6 @@ class FxBimHandler {
             p.setFill(Color.rgb(0, colorVal, 0));
         });
 
-        iter.remove();
         return p;
     }
 
@@ -254,16 +253,12 @@ class FxBimHandler {
     }
 
     private void fillSensorData(SensorExt s, boolean isEditable) {
-        controller.sensorTab.setExpanded(true);
+        controller.sensorTab.setExpanded(true); // Разворачиваем вкладку при активации сенсора
         controller.sensorIdField.setText(s.getId());
         controller.sensorDeviceIdField.setText(String.valueOf(s.getDeviceId()));
 
-        List<String> types = new ArrayList<>();
-        types.add("UNKNOWN");
-        types.add("TEMPERATURE");
-        types.add("SMOKE");
-        types.add("GENERAL");
-        controller.sensorTypeField.setItems(FXCollections.observableList(types));
+        String[] types = new String[] { "UNKNOWN", "TEMPERATURE", "SMOKE", "GENERAL" };
+        controller.sensorTypeField.setItems(FXCollections.observableArrayList(types));
 
         int index;
         switch (s.getType()) {
@@ -281,11 +276,15 @@ class FxBimHandler {
         }
         controller.sensorTypeField.getSelectionModel().select(index);
 
-        if (isEditable) {
+        /*if (isEditable) {
             controller.sensorIdField.setEditable(true);
             controller.sensorDeviceIdField.setEditable(true);
             controller.sensorTypeField.setDisable(false);
-        }
+        }*/
+    }
+
+    private void applyChangeSensor() {
+
     }
 
     private void fillTransitionData(TransitionExt t) {

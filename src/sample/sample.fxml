@@ -175,9 +175,9 @@
                                         </TitledPane>
                                         <TitledPane fx:id="sensorTab" animated="false" prefHeight="608.0" prefWidth="292.0" text="Sensor">
                                             <content>
-                                                <VBox prefHeight="200.0" prefWidth="100.0">
+                                                <VBox fx:id="sensorApplayChange" prefHeight="200.0" prefWidth="100.0">
                                                     <children>
-                                                        <GridPane prefHeight="120.0">
+                                                        <GridPane prefHeight="210.0">
                                                             <columnConstraints>
                                                                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0" prefWidth="44.0" />
                                                                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="180.0" minWidth="10.0" prefWidth="180.0" />
@@ -187,6 +187,9 @@
                                                                 <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" />
                                                                 <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                                 <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                             </rowConstraints>
                                                             <children>
                                                                 <Label text="Id" />
@@ -201,7 +204,8 @@
                                                                         <Cursor fx:constant="TEXT" />
                                                                     </cursor>
                                                                 </TextField>
-                                                                <ChoiceBox fx:id="sensorTypeField" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                                <ChoiceBox fx:id="sensorTypeField" disable="true" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <Button fx:id="sensorApplyChange" mnemonicParsing="false" text="apply" GridPane.rowIndex="6" />
                                                             </children>
                                                         </GridPane>
                                                     </children>

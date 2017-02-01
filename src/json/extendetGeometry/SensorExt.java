@@ -27,10 +27,26 @@
 
 package json.extendetGeometry;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import json.geometry.Sensor;
 
 /**
  * Created by boris on 17.12.16.
  */
 public class SensorExt extends Sensor {
+
+    private StringProperty uuid;
+
+    public SensorExt() {
+        uuid = new SimpleStringProperty(this, getId());
+    }
+
+    public String getUuid() {
+        return uuid.get();
+    }
+
+    public StringProperty uuidProperty() {
+        return uuid;
+    }
 }
