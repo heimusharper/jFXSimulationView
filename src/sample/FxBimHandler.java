@@ -1,5 +1,7 @@
 package sample;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
@@ -99,8 +101,7 @@ class FxBimHandler {
         gRoot.getChildren().addAll(gZones, gTransitions, gSensors, gArrows, gLights);
         gRoot.setId("gRoot");
 
-        for (Iterator<ZoneExt> iter = bim.getZones().values().iterator(); iter.hasNext(); ) {
-            ZoneExt zone = iter.next();
+        for (ZoneExt zone : bim.getZones().values()) {
             if (zone.isSafetyZone()) {
                 //                iter.remove();
                 continue; // Отсекаем безопасную зону, она не имеет геометрических параметров
@@ -110,10 +111,10 @@ class FxBimHandler {
             switch (zone.getType()) {
             case FLOOR:
                 if (!insidePoint(currentLevel, zone.getLevel())) continue;
-                gZones.getChildren().add(drawZone(bim, numOfLevels, zone, iter));
+                gZones.getChildren().add(drawZone(bim, numOfLevels, zone));
                 break;
             default:
-                gZones.getChildren().add(drawZone(bim, numOfLevels, zone, iter));
+                gZones.getChildren().add(drawZone(bim, numOfLevels, zone));
             }
 
             if (!zone.getSensors().isEmpty()) for (SensorExt sensor : zone.getSensors())
@@ -168,7 +169,7 @@ class FxBimHandler {
         return c;
     }
 
-    private Polygon drawZone(BIMExt bim, double s, ZoneExt z, Iterator<ZoneExt> iter) {
+    private Polygon drawZone(BIMExt bim, double s, ZoneExt z) {
         final Polygon p = new Polygon();
 
         for (int c = 0; c < z.getXyz().length; c++) // кольца
@@ -187,10 +188,14 @@ class FxBimHandler {
         int valFill = (int) ((z.getNumOfPeople() * 255) / bim.getNumOfPeople()) * 10;
         p.setFill(Color.rgb(0, valFill > 255 ? 255 : valFill, 0));
 
-        z.numberOfPeopleProperty().addListener(e -> {
-            final double val = ((z.getNumberOfPeople() * 255) / bim.getNumOfPeople()) * 10;
+        z.numberOfPeopleProperty().addListener((e, oldValue, newValue) -> {
+            final double val = ((newValue.doubleValue() * 255) / bim.getNumOfPeople()) * 10;
             final int colorVal = (int) val > 255 ? 255 : (int) val;
             p.setFill(Color.rgb(0, colorVal, 0));
+        });
+
+        z.permeabilityProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.doubleValue() <= 0.1) p.setFill(Color.RED);
         });
 
         return p;

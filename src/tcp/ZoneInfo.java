@@ -30,29 +30,29 @@ package tcp;
 /**
  * Created by boris on 15.01.17.
  */
-public class ChangePeopleEvent {
+public class ZoneInfo {
 
-    private double numOfPeople;
+    public static final int PEOPLE       = 0;
+    public static final int PERMEABILITY = 1;
+
     private String zid;
+    private int    type;
+    private double numOfPeople;
+    private double permeability;
 
-    public ChangePeopleEvent(String zid, double numOfPeople) {
-        setNumOfPeople(numOfPeople);
-        setZid(zid);
+    public String getZid() {
+        return zid;
     }
 
     public double getNumOfPeople() {
         return numOfPeople;
     }
 
-    private void setNumOfPeople(double numOfPeople) {
-        this.numOfPeople = numOfPeople;
+    public double getPermeability() {
+        return permeability;
     }
 
-    public String getZid() {
-        return zid;
-    }
-
-    private void setZid(String zid) {
-        this.zid = zid;
+    public int getType() {
+        return type;
     }
 }

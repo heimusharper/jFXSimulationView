@@ -136,12 +136,12 @@ public class TCPClient extends Thread {
                 if (r < sizeBuffer) continue;
                 // Интерпретируем байты
                 final String data = new String(resultsBuffer, 0, r);
-                ChangePeopleEvent changePeople = new Gson().fromJson(data, ChangePeopleEvent.class);
-                /*if (changePeople.getZid().equals("sz0")) EBus.post(new SafetyZoneEvent(changePeople.getNumOfPeople()));
+                ZoneInfo zoneInfo = new Gson().fromJson(data, ZoneInfo.class);
+                /*if (zoneInfo.getZid().equals("sz0")) EBus.post(new SafetyZoneEvent(zoneInfo.getNumOfPeople()));
                 else */
-                EBus.post(changePeople);
+                EBus.post(zoneInfo);
 
-                System.out.println(changePeople.getZid() + ":::" + changePeople.getNumOfPeople());
+                System.out.println(zoneInfo.getZid() + ":::" + zoneInfo.getNumOfPeople() + ":::" + zoneInfo.getPermeability());
                 break;
             } while (true);
         }

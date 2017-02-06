@@ -37,9 +37,12 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import json.geometry.Zone;
-import tcp.ChangePeopleEvent;
+import tcp.ZoneInfo;
 
 import java.util.ArrayList;
+
+import static tcp.ZoneInfo.PEOPLE;
+import static tcp.ZoneInfo.PERMEABILITY;
 
 /**
  * Класс, расширяющий базовый {@link Zone}.
@@ -52,12 +55,12 @@ public class ZoneExt extends Zone<LightExt, SensorExt, SpeakerExt> implements Ev
     /**
      * Минимальное и максимальное значение по оси Z
      */
-    private double zMin = Double.MAX_VALUE;
-    private double zMax = -Double.MIN_VALUE;
+    private double         zMin         = Double.MAX_VALUE;
+    private double         zMax         = -Double.MIN_VALUE;
     /**
      * Проницаемость зоны. (0 - зона не проницаема для людей, 1- полностью проницаема)
      */
-    private double permeability;
+    private DoubleProperty permeability = new SimpleDoubleProperty(1.0);
     /**
      * Направление движения по лестнице. (+3 - вверх, -3 - вниз)
      */
@@ -88,7 +91,6 @@ public class ZoneExt extends Zone<LightExt, SensorExt, SpeakerExt> implements Ev
     private boolean isSafetyZone;
 
     {
-        setPermeability(1);
         setNTay(0);
         setSafetyZone(false);
         registeredOnBus(this);
@@ -192,14 +194,7 @@ public class ZoneExt extends Zone<LightExt, SensorExt, SpeakerExt> implements Ev
      * @return Значение проницаемости зоны
      */
     public double getPermeability() {
-        return this.permeability;
-    }
-
-    /**
-     * @return true, если зона проницаема
-     */
-    public boolean isPermeability() {
-        return this.permeability == 1;
+        return this.permeability.get();
     }
 
     /**
@@ -208,7 +203,16 @@ public class ZoneExt extends Zone<LightExt, SensorExt, SpeakerExt> implements Ev
      * @param permeabilityValue - проницаемость зоны ( от 0 до 1)
      */
     public void setPermeability(double permeabilityValue) {
-        this.permeability = permeabilityValue;
+        this.permeability.set(permeabilityValue);
+    }
+
+    @Subscribe private void setPermeability(ZoneInfo zoneInfo) {
+        if (zoneInfo.getZid().equals(getId()) && zoneInfo.getType() == PERMEABILITY)
+            setPermeability(zoneInfo.getPermeability());
+    }
+
+    public DoubleProperty permeabilityProperty() {
+        return permeability;
     }
 
     /**
@@ -320,9 +324,9 @@ public class ZoneExt extends Zone<LightExt, SensorExt, SpeakerExt> implements Ev
         this.numberOfPeople.set(numberOfPeople);
     }
 
-    @Subscribe public void setNumberOfPeople(ChangePeopleEvent changePeopleEvent) {
-        if (!changePeopleEvent.getZid().equals(getId())) return;
-        this.numberOfPeople.set(changePeopleEvent.getNumOfPeople());
+    @Subscribe public void setNumberOfPeople(ZoneInfo zoneInfo) {
+        if (zoneInfo.getZid().equals(getId()) && zoneInfo.getType() == PEOPLE)
+            setNumberOfPeople(zoneInfo.getNumOfPeople());
     }
 
     public DoubleProperty numberOfPeopleProperty() {
@@ -333,7 +337,7 @@ public class ZoneExt extends Zone<LightExt, SensorExt, SpeakerExt> implements Ev
         return isSafetyZone;
     }
 
-    public void setSafetyZone(boolean safetyZone) {
+    void setSafetyZone(boolean safetyZone) {
         isSafetyZone = safetyZone;
     }
 
