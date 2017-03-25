@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 public class Controller implements Initializable {
     private final Image imagePlay;
@@ -56,9 +57,11 @@ public class Controller implements Initializable {
 
     private TCPClient client;
     private BIMExt    bim;
+    private Preferences userPrefs;
+    private final String WORKSPACE = "workspace";
 
     {
-        System.setProperty("user.workspace", "/home/boris/workspace/java/jSimulationMoving/src/main/resources");
+    	userPrefs = Preferences.userRoot().node("jFXSimulationView"); 
 
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         InputStream isPlay = classloader.getResourceAsStream("play.png");
@@ -72,13 +75,17 @@ public class Controller implements Initializable {
     }
 
     private void setBim(File file) throws FileNotFoundException {
+        String absolutePath = file.getAbsolutePath();
+        absolutePath = absolutePath.substring(0,absolutePath.lastIndexOf(File.separator));
+        userPrefs.put(WORKSPACE, absolutePath);
         this.bim = new BIMLoader<>(new FileInputStream(file), BIMExt.class).getBim();
     }
 
     public void openFileHandler() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("View Pictures");
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.workspace"))); // or user.home
+    	String filesDir = userPrefs.get(WORKSPACE, System.getProperty("user.home"));
+        fileChooser.setInitialDirectory(new File(filesDir));
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON", "*.json"),
                 new FileChooser.ExtensionFilter("All files", "*.*"));
         try {
@@ -149,7 +156,7 @@ public class Controller implements Initializable {
     }
 
     public void disconnectHandler() throws InterruptedException {
-        client.stopClient(); // Не работает походу =)
+        client.stopClient(); // ���� ���������������� ������������ =)
         networkTab.setExpanded(false);
         networkTab.setVisible(false);
         disconnect.setDisable(true);
