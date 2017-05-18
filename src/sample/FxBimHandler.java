@@ -36,20 +36,14 @@ class FxBimHandler {
 
     private BIMExt     bim;
     private Controller controller;
-    private double     orgSceneX;
-    private double     orgSceneY;
-    private double     orgTranslateX;
-    private double     orgTranslateY;
 
     FxBimHandler(BIMExt bim, Controller controller) {
         this.bim = bim;
         this.controller = controller;
     }
 
-    void drawBim(Group gRoot) {
+	void drawBim(Group gRoot) {
         gRoot.getChildren().remove(0, gRoot.getChildren().size());
-        setZoomer(gRoot);
-        setDraggable(gRoot);
 
         ArrayList<ZoneExt> zones = new ArrayList<>(bim.getRooms().size());
         bim.getRooms().parallelStream().forEach(z -> z.getZones().parallelStream().forEach(zones::add));
@@ -212,44 +206,6 @@ class FxBimHandler {
     private boolean insidePoint(double x1, double x2) {
         final double e = 1e-8; // некоторая малая величина
         return (x2 <= x1 + e) && (x2 >= x1 - e);
-    }
-
-    private void setZoomer(Group gRoot) {
-        // Create operator
-        AnimatedZoomOperator zoomOperator = new AnimatedZoomOperator();
-
-        // Listen to scroll events (similarly you could listen to a button click, slider, ...)
-        gRoot.setOnScroll(event -> {
-            double zoomFactor = 1.5;
-            if (event.isControlDown()) zoomFactor = 1.1;
-            if (event.getDeltaY() <= 0) {
-                // zoom out
-                zoomFactor = 1 / zoomFactor;
-            }
-            zoomOperator.zoom(gRoot, zoomFactor, event.getSceneX(), event.getSceneY());
-        });
-    }
-
-    /**
-     * http://java-buddy.blogspot.ru/2013/07/javafx-drag-and-move-something.html
-     */
-    private void setDraggable(Group gRoot) {
-        gRoot.setOnMousePressed(mousePressedEvent -> {
-            orgSceneX = mousePressedEvent.getSceneX();
-            orgSceneY = mousePressedEvent.getSceneY();
-            orgTranslateX = ((Group) (mousePressedEvent.getSource())).getTranslateX();
-            orgTranslateY = ((Group) (mousePressedEvent.getSource())).getTranslateY();
-        });
-
-        gRoot.setOnMouseDragged(mouseDraggedEvent -> {
-            double offsetX = mouseDraggedEvent.getSceneX() - orgSceneX;
-            double offsetY = mouseDraggedEvent.getSceneY() - orgSceneY;
-            double newTranslateX = orgTranslateX + offsetX;
-            double newTranslateY = orgTranslateY + offsetY;
-
-            ((Group) (mouseDraggedEvent.getSource())).setTranslateX(newTranslateX);
-            ((Group) (mouseDraggedEvent.getSource())).setTranslateY(newTranslateY);
-        });
     }
 
     private void fillZoneData(ZoneExt z) {

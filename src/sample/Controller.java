@@ -59,6 +59,10 @@ public class Controller implements Initializable {
     private BIMExt    bim;
     private Preferences userPrefs;
     private final String WORKSPACE = "workspace";
+    private double     orgSceneX;
+    private double     orgSceneY;
+    private double     orgTranslateX;
+    private double     orgTranslateY;
 
     {
     	userPrefs = Preferences.userRoot().node("jFXSimulationView"); 
@@ -92,6 +96,40 @@ public class Controller implements Initializable {
             setBim(fileChooser.showOpenDialog(new Stage()));
             FxBimHandler bimHandler = new FxBimHandler(bim, this);
             bimHandler.drawBim(gRoot);
+            
+            canvas.setOnMousePressed(mousePressedEvent -> {
+                orgSceneX = mousePressedEvent.getSceneX();
+                orgSceneY = mousePressedEvent.getSceneY();
+                orgTranslateX = gRoot.getTranslateX();
+                orgTranslateY = gRoot.getTranslateY();
+            });
+            
+
+            canvas.setOnMouseDragged(mouseDraggedEvent -> {
+            	
+                double offsetX = mouseDraggedEvent.getSceneX() - orgSceneX;
+                double offsetY = mouseDraggedEvent.getSceneY() - orgSceneY;
+                double newTranslateX = orgTranslateX + offsetX;
+                double newTranslateY = orgTranslateY + offsetY;
+
+                gRoot.setTranslateX(newTranslateX);
+                gRoot.setTranslateY(newTranslateY);
+            });
+
+            AnimatedZoomOperator zoomOperator = new AnimatedZoomOperator();
+
+            // Listen to scroll events (similarly you could listen to a button click, slider, ...)
+            canvas.setOnScroll(event -> {
+                double zoomFactor = 1.5;
+                if (event.isControlDown()) zoomFactor = 1.1;
+                if (event.getDeltaY() <= 0) {
+                    // zoom out
+                    zoomFactor = 1 / zoomFactor;
+                }
+                zoomOperator.zoom(gRoot, zoomFactor, event.getSceneX(), event.getSceneY());
+            });
+            
+            
         } catch (NullPointerException e) {
             System.out.println("File not selected");
         } catch (FileNotFoundException e) {
